@@ -7,7 +7,7 @@ from sqlalchemy import create_engine, func
 
 from flask import Flask, jsonify
 
-engine = create_engine("sqlite:///hawaii.sqlite")
+engine = create_engine("sqlite:///C:/GWDataAnalytics/GWHomework/sqlalchemy-challenge/hawaii.sqlite")
 
 # reflect an existing database into a new model
 Base = automap_base()
@@ -66,20 +66,20 @@ def tobs():
   #query for the dates and temperature observations from a year from the last data point.
   #Return a JSON list of Temperature Observations (tobs) for the previous year.
 
-@climate_app.route(f"/api/v1.0/<start>")
-def start_date():
+@climate_app.route(f"/api/v1.0/start/<start>")
+def start_date(start):
   session = Session(engine)
-  start_date_query = session.query(Measurement.date, func.min(Measurement.tobs), func.avg(Measurement.tobs), func.max(Measurement.tobs)).group_by(Measurement.date).filter(Measurement.date>'<start>').all()
+  start_date_query = session.query(Measurement.date, func.min(Measurement.tobs), func.avg(Measurement.tobs), func.max(Measurement.tobs)).group_by(Measurement.date).filter(Measurement.date>start).all()
   session.close()
   start_date_list = list(np.ravel(start_date_query))
   return jsonify(start_date_list)
 
 
 
-@climate_app.route(f"/api/v1.0/<start>/<end>")
-def start_end_date():
+@climate_app.route(f"/api/v1.0/start/end/<start>/<end>")
+def start_end_date(start, end):
   session = Session(engine)
-  start_end_query = session.query(Measurement.date, func.min(Measurement.tobs), func.avg(Measurement.tobs), func.max(Measurement.tobs)).group_by(Measurement.date).filter(Measurement.date>'<start>').filter(Measurement.date < '<end>').all()
+  start_end_query = session.query(Measurement.date, func.min(Measurement.tobs), func.avg(Measurement.tobs), func.max(Measurement.tobs)).group_by(Measurement.date).filter(Measurement.date>start).filter(Measurement.date < end).all()
   session.close()
   start_end_list = list(np.ravel(start_end_query))
   return jsonify(start_end_list)
@@ -88,4 +88,4 @@ def start_end_date():
   #When given the start and the end date, calculate the `TMIN`, `TAVG`, and `TMAX` for dates between the start and end date inclusive.
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    climate_app.run(debug=True)
